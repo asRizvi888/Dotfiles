@@ -1,0 +1,11 @@
+# ~/Dotfiles/.config/homebrew/Brewfile
+
+# 1. CLI Formulas (Standard binaries)
+brew "gh"
+
+# 2. Graphical Applications (Casks)
+cask "ghostty"
+
+# 3. Developer Fonts (Optional, but great for ligatures)
+cask "font-jetbrains-mono-nerd-font"
+
