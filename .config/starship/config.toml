@@ -3,7 +3,7 @@ scan_timeout = 100
 command_timeout = 500
 follow_symlinks = false
 add_newline = true
-palette = "custom1"
+palette = "solarized_osaka"
 
 format = """
 $directory\
@@ -83,9 +83,9 @@ format =  "  [$symbol$branch]($style)[](base)"
 # [git_status]
 # MINIMAL git status
 # format = " [($all_status$ahead_behind )]($style)"
-ahead    = "⇡${count} "
-behind   = "⇣${count} "
-diverged = "⇕⇡${ahead_count}⇣${behind_count} "
+# ahead    = "⇡${count} "
+# behind   = "⇣${count} "
+# diverged = "⇕⇡${ahead_count}⇣${behind_count} "
 
 [git_status]
 format = "[$untracked$staged$modified$renamed$conflicted$ahead_behind ]($style)"
