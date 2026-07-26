@@ -11,9 +11,11 @@ mkdir -p "$HOME/.config"
 ln -sfn "$HOME/Dotfiles/.config/ghostty"   "$HOME/.config/ghostty"
 ln -sfn "$HOME/Dotfiles/.config/nvim"      "$HOME/.config/nvim"
 ln -sfn "$HOME/Dotfiles/.config/homebrew"  "$HOME/.config/homebrew"
+ln -sfn "$HOME/Dotfiles/.config/zsh"	   "$HOME/.config/zsh"
 
 # 3. Link configurations that live outside of ~/.config (like tmux)
 ln -sfn "$HOME/Dotfiles/.tmux.conf"        "$HOME/.tmux.conf"
+ln -sfn "$HOME/Dotfiles/.zshenv" 	   "$HOME/.zshenv"		
 
 echo "✅ Symbolic links created successfully!"
 
