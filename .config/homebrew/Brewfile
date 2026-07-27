@@ -3,7 +3,13 @@
 # 1. CLI Formulas (Standard binaries)
 brew "gh"
 brew "starship"
+
+brew "neovim"
 brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "lazygit"
+
 brew "node"
 brew "python"
 brew "go"
