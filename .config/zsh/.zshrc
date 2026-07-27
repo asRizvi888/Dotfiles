@@ -45,3 +45,6 @@ fz() {
   fi
 }
 
+# Claude Code path
+export PATH="$HOME/.local/bin:$PATH"
+
