@@ -4,6 +4,9 @@
 brew "gh"
 brew "starship"
 brew "fzf"
+brew "node"
+brew "python"
+brew "go"
 
 # 2. Graphical Applications (Casks)
 cask "ghostty"
