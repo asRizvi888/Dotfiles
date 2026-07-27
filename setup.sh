@@ -17,6 +17,7 @@ ln -sfn "$HOME/Dotfiles/.config/starship"  "$HOME/.config/starship"
 # 3. Link configurations that live outside of ~/.config (like tmux)
 ln -sfn "$HOME/Dotfiles/.tmux.conf"        "$HOME/.tmux.conf"
 ln -sfn "$HOME/Dotfiles/.zshenv" 	   "$HOME/.zshenv"		
+ln -sfn "$HOME/Dotfiles/.vimrc" 	   "$HOME/.vimrc"		
 
 echo "✅ Symbolic links created successfully!"
 

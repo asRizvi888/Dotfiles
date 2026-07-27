@@ -5,6 +5,7 @@ alias md="mkdir -p"
 # VIM keybinding
 
 bindkey -v
+KEYTIMEOUT=1
 
 
 # Tell Starship exactly where your custom config file lives
