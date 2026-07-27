@@ -48,3 +48,12 @@ fz() {
 # Claude Code path
 export PATH="$HOME/.local/bin:$PATH"
 
+# Homebrew environment: puts /usr/local/bin ahead of /usr/bin so brew's git wins
+eval "$(/usr/local/bin/brew shellenv)"
+
+# Homebrew's completion scripts
+fpath=(/usr/local/share/zsh/site-functions $fpath)
+
+# Completion engine, -i loads dirs instead of silently skipping on the permission check
+autoload -Uz compinit
+compinit -i

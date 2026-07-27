@@ -2,6 +2,7 @@
 
 # 1. CLI Formulas (Standard binaries)
 brew "gh"
+brew "git"
 brew "starship"
 
 brew "neovim"
