@@ -48,6 +48,13 @@ fz() {
 # Claude Code path
 export PATH="$HOME/.local/bin:$PATH"
 
+# JAVA Home path
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+
+export ANDROID_HOME=$HOME/Library/Android/sdk
+export PATH=$PATH:$ANDROID_HOME/emulator
+export PATH=$PATH:$ANDROID_HOME/platform-tools
+
 # Homebrew environment: puts /usr/local/bin ahead of /usr/bin so brew's git wins
 eval "$(/usr/local/bin/brew shellenv)"
 
@@ -57,3 +64,8 @@ fpath=(/usr/local/share/zsh/site-functions $fpath)
 # Completion engine, -i loads dirs instead of silently skipping on the permission check
 autoload -Uz compinit
 compinit -i
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/asrizvi/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
