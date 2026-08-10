@@ -14,7 +14,7 @@ Personal macOS dotfiles, managed with a single `setup.sh` that symlinks configs 
 | [tmux](https://github.com/tmux/tmux) | `.config/tmux/tmux.conf` |
 | Vim (fallback) | `.vimrc` |
 
-Packages installed via `brew bundle` (see `.config/homebrew/Brewfile` for the full list): `gh`, `git`, `starship`, `neovim`, `fzf`, `ripgrep`, `fd`, `lazygit`, `tmux`, `node`, `python`, `go`, `pnpm`, plus the `ghostty` cask and JetBrains Mono Nerd Font.
+Packages installed via `brew bundle` (see `.config/homebrew/Brewfile` for the full list): `gh`, `git`, `starship`, `neovim`, `fzf`, `ripgrep`, `fd`, `lazygit`, `tmux`, `glow`, `node`, `python`, `go`, `pnpm`, plus the `ghostty` cask and JetBrains Mono Nerd Font.
 
 ## Prerequisites
 
@@ -60,7 +60,10 @@ cd ~/Dotfiles
 
 ## 3. Run setup
 
+`setup.sh` is already committed as executable (git preserves the mode bit on clone), so no `chmod +x` should be needed. If it ever isn't (e.g. permissions got stripped by a zip/download instead of a clone), fix it first:
+
 ```bash
+chmod +x setup.sh   # only if `./setup.sh` errors with "Permission denied"
 ./setup.sh
 ```
 
@@ -88,6 +91,16 @@ starship --version
 - Neovim: LazyVim plugins install automatically on first launch. Restart Neovim once they finish.
 - Ghostty: open the app and confirm the font renders as **JetBrainsMono Nerd Font** — if not, set it manually in `.config/ghostty/config` or the app's settings.
 - tmux reload after edits: `prefix + r` (i.e. `Ctrl-a` then `r`).
+
+## Reading docs in the terminal
+
+`glow` renders Markdown (headers, tables, code blocks) with color instead of dumping raw text:
+
+```bash
+glow README.md          # render a specific file
+glow                     # browse Markdown files in the current directory
+glow -p README.md        # paginate long files
+```
 
 ## Optional / machine-specific
 

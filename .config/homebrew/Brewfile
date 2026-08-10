@@ -11,6 +11,7 @@ brew "ripgrep"
 brew "fd"
 brew "lazygit"
 brew "tmux"
+brew "glow"
 
 brew "node"
 brew "python"
