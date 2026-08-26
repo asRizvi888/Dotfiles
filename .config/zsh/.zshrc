@@ -45,6 +45,23 @@ fz() {
   fi
 }
 
+# Tmux Session Manager
+
+tmux() {
+    # If no arguments are passed, run your custom toggler logic
+    if [ $# -eq 0 ]; then
+        if /usr/bin/env tmux has-session 2>/dev/null; then
+            /usr/bin/env tmux attach-session \; choose-tree -Zs
+        else
+            /usr/bin/env tmux new-session
+        fi
+    else
+        # If arguments are passed (e.g., tmux ls, tmux attach), run them normally
+        /usr/bin/env tmux "$@"
+    fi
+}
+
+
 # Claude Code path
 export PATH="$HOME/.local/bin:$PATH"
 
