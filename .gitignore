@@ -1,3 +1,5 @@
 .config/zsh/*
 !.config/zsh/.zshrc
 *.log
+*.config/tmux/*
+!.config/tmux/tmux.conf
