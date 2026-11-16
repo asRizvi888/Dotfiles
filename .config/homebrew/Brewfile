@@ -21,6 +21,7 @@ brew "pnpm"
 
 # 2. Graphical Applications (Casks)
 cask "ghostty"
+cask "claude-code"
 
 # 3. Developer Fonts (Optional, but great for ligatures)
 cask "font-jetbrains-mono-nerd-font"

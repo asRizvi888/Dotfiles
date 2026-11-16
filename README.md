@@ -47,7 +47,7 @@ Verify:
 brew --version
 ```
 
-> **Note:** `setup.sh` and `.zshrc` in this repo assume Homebrew lives at `/usr/local` (Intel path). If you're on Apple Silicon (`/opt/homebrew`), update the `eval "$(/usr/local/bin/brew shellenv)"` line in `.config/zsh/.zshrc` to `/opt/homebrew/bin/brew` after installing.
+> **Note:** `.config/zsh/.zshrc` detects Homebrew automatically — it uses `/opt/homebrew` on Apple Silicon and falls back to `/usr/local` on Intel, so no manual edits are needed.
 
 ## 2. Clone this repo
 

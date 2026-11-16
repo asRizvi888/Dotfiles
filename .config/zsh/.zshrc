@@ -72,11 +72,16 @@ export ANDROID_HOME=$HOME/Library/Android/sdk
 export PATH=$PATH:$ANDROID_HOME/emulator
 export PATH=$PATH:$ANDROID_HOME/platform-tools
 
-# Homebrew environment: puts /usr/local/bin ahead of /usr/bin so brew's git wins
-eval "$(/usr/local/bin/brew shellenv)"
+# Homebrew environment: puts brew's bin ahead of /usr/bin so brew's git wins
+# (/opt/homebrew on Apple Silicon, /usr/local on Intel)
+if [[ -x /opt/homebrew/bin/brew ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -x /usr/local/bin/brew ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+fi
 
 # Homebrew's completion scripts
-fpath=(/usr/local/share/zsh/site-functions $fpath)
+[[ -n "$HOMEBREW_PREFIX" ]] && fpath=($HOMEBREW_PREFIX/share/zsh/site-functions $fpath)
 
 # Completion engine, -i loads dirs instead of silently skipping on the permission check
 autoload -Uz compinit
