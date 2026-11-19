@@ -62,6 +62,11 @@ tmux() {
 }
 
 
+# Save / restore the whole tmux server (state lives in ~/.config/tmux/tmux.dump)
+
+alias tmux-push="$HOME/.config/tmux/tmux.state push"
+alias tmux-pull="$HOME/.config/tmux/tmux.state pull"
+
 # Claude Code path
 export PATH="$HOME/.local/bin:$PATH"
 

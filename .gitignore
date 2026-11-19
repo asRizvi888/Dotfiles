@@ -3,3 +3,5 @@
 *.log
 *.config/tmux/*
 !.config/tmux/tmux.conf
+
+!.config/tmux/tmux.state

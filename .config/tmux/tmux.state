@@ -1,0 +1,131 @@
+#!/usr/bin/env zsh
+# Save / restore the layout of the running tmux server (sessions, windows, panes,
+# names, working directories, layouts) without touching tmux itself.
+#
+#   tmux.state push   dump the running server to tmux.dump (overwrites the file)
+#   tmux.state pull   recreate the dumped sessions on the current server
+#
+# Running programs are not restored, only where they were: each pane comes back
+# as a fresh shell in the same directory. Sessions that already exist are skipped.
+
+DUMP="${TMUX_DUMP:-${XDG_CONFIG_HOME:-$HOME/.config}/tmux/tmux.dump}"
+US=$'\x1f'
+
+die() { print -u2 -- "tmux.state: $*"; exit 1; }
+
+push() {
+  tmux list-sessions >/dev/null 2>&1 || die "no tmux server running, keeping existing $DUMP"
+
+  local tmp
+  tmp=$(mktemp "${DUMP}.XXXXXX") || die "cannot write next to $DUMP"
+
+  {
+    print -r -- "# tmux.state v1"
+    local s w
+    for s in ${(f)"$(tmux list-sessions -F '#{session_name}')"}; do
+      print -r -- "S${US}${s}"
+      for w in ${(f)"$(tmux list-windows -t "=$s" -F '#{window_index}')"}; do
+        tmux list-windows -t "=$s" -f "#{==:#{window_index},$w}" \
+          -F "W${US}#{window_index}${US}#{window_name}${US}#{automatic-rename}${US}#{window_active}${US}#{window_zoomed_flag}${US}#{window_width}${US}#{window_height}${US}#{window_layout}"
+        tmux list-panes -t "=$s:$w" \
+          -F "P${US}#{pane_active}${US}#{pane_current_path}"
+      done
+    done
+  } >"$tmp" || { rm -f "$tmp"; die "dump failed, keeping existing $DUMP"; }
+
+  mv -f "$tmp" "$DUMP" || { rm -f "$tmp"; die "cannot replace $DUMP"; }
+  print -- "saved $(grep -c "^S${US}" "$DUMP") sessions, $(grep -c "^W${US}" "$DUMP") windows -> $DUMP"
+}
+
+# ---- pull -------------------------------------------------------------------
+
+typeset -g session skip created=0 restored=0 skipped=0 active_window=""
+typeset -g w_idx w_name w_auto w_active w_zoom w_cols w_rows w_layout
+typeset -ga p_paths
+typeset -g have_window=0 p_active_n=1
+
+# Create the buffered window (and its session, if this is its first window).
+flush_window() {
+  (( have_window )) || return 0
+  have_window=0
+  (( skip )) && return 0
+
+  local target="=${session}:${w_idx}" name_args=() dir n
+  [[ $w_auto == 0 ]] && name_args=(-n "$w_name")
+  dir=${p_paths[1]}; [[ -d $dir ]] || dir=$HOME
+
+  if (( ! created )); then
+    tmux new-session -d -s "$session" -x "$w_cols" -y "$w_rows" -c "$dir" "${name_args[@]}" \
+      || { print -u2 "tmux.state: could not create session $session"; skip=1; return 0; }
+    created=1
+    local first
+    first=$(tmux list-windows -t "=$session" -F '#{window_index}' | head -n1)
+    [[ $first == $w_idx ]] || tmux move-window -d -s "=${session}:${first}" -t "$target" 2>/dev/null
+  else
+    tmux new-window -d -t "$target" -c "$dir" "${name_args[@]}" \
+      || { print -u2 "tmux.state: could not create window $session:$w_idx"; return 0; }
+  fi
+
+  for (( n = 2; n <= ${#p_paths}; n++ )); do
+    dir=${p_paths[n]}; [[ -d $dir ]] || dir=$HOME
+    # split the last pane so new panes land in dump order
+    tmux split-window -d -t "$(tmux list-panes -t "$target" -F '#{pane_id}' | tail -n1)" -c "$dir" 2>/dev/null \
+      || print -u2 "tmux.state: no room for pane $n in $session:$w_idx"
+    tmux select-layout -t "$target" tiled >/dev/null 2>&1   # keep room for the next split
+  done
+
+  tmux select-layout -t "$target" "$w_layout" >/dev/null 2>&1 \
+    || print -u2 "tmux.state: could not apply layout to $session:$w_idx"
+
+  local -a ids=( ${(f)"$(tmux list-panes -t "$target" -F '#{pane_id}')"} )
+  [[ -n ${ids[p_active_n]} ]] && tmux select-pane -t "${ids[p_active_n]}"
+  [[ $w_zoom == 1 ]] && (( ${#ids} > 1 )) && tmux resize-pane -Z -t "$target"
+  [[ $w_active == 1 ]] && active_window=$w_idx
+  return 0
+}
+
+# Finish the current session: put focus back on the window that was active.
+flush_session() {
+  flush_window
+  if (( created )) && [[ -n $active_window ]]; then
+    tmux select-window -t "=${session}:${active_window}" 2>/dev/null
+  fi
+  (( created )) && (( restored++ ))
+  created=0 active_window=""
+}
+
+pull() {
+  [[ -f $DUMP ]] || die "no dump at $DUMP, run tmux-push first"
+
+  local type a b c d e f g h
+  while IFS=$US read -r type a b c d e f g h; do
+    case $type in
+      S)
+        flush_session
+        session=$a skip=0
+        if tmux has-session -t "=$session" 2>/dev/null; then
+          skip=1 skipped=$(( skipped + 1 ))
+          print -- "skipping $session (already running)"
+        fi
+        ;;
+      W)
+        flush_window
+        w_idx=$a w_name=$b w_auto=$c w_active=$d w_zoom=$e w_cols=$f w_rows=$g w_layout=$h
+        p_paths=() p_active_n=1 have_window=1
+        ;;
+      P)
+        p_paths+=("$b")
+        [[ $a == 1 ]] && p_active_n=${#p_paths}
+        ;;
+    esac
+  done <"$DUMP"
+  flush_session
+
+  print -- "restored $restored sessions, skipped $skipped (shells start fresh in the saved directories)"
+}
+
+case ${1:-} in
+  push) push ;;
+  pull) pull ;;
+  *) die "usage: tmux.state push|pull" ;;
+esac
